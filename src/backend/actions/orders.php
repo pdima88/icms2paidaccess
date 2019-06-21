@@ -3,6 +3,7 @@ namespace pdima88\icms2paidaccess\backend\actions;
 
 use Nette\Utils\Html;
 use pdima88\icms2ext\crudAction;
+use pdima88\icms2paidaccess\tables\table_orders;
 
 /**
  * @property modelPaidaccess $model
@@ -13,7 +14,7 @@ class orders extends crudAction {
     function getGrid() {
 
         $select = $this->model->orders->selectAs('o')
-            ->joinLeftBy(tablePaidaccess_Orders::FK_USER, 'u')
+            ->joinLeftBy(table_orders::FK_USER, 'u')
             ->columns([
                 'o.*',
                 'user_fio' => 'CONCAT_WS(" ", u.lname, u.fname, u.mname)'

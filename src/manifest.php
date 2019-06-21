@@ -10,4 +10,8 @@ class manifest
             'bonuscode_type_form',
         ];
     }
+
+    function getRootPath() {
+        return realpath(dirname(__FILE__).'/..');
+    }
 }

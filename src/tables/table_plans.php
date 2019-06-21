@@ -3,6 +3,7 @@ namespace pdima88\icms2paidaccess\tables;
 
 use pdima88\icms2ext\Table;
 use cmsModel;
+use Zend_Db_Table_Row_Abstract;
 
 /**
  * Тариф

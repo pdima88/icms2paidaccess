@@ -8,6 +8,7 @@ use pdima88\icms2pay\tables\table_invoices;
 use cmsUser;
 use cmsModel;
 use Exception;
+use Zend_Db_Table_Row_Abstract;
 
 /**
  * Class paidaccessOrder
@@ -110,7 +111,7 @@ class row_order extends Zend_Db_Table_Row_Abstract {
 class table_orders extends Table {
     protected $_name = 'paidaccess_orders';
 
-    protected $_rowClass = 'paidaccessOrder';
+    protected $_rowClass = __NAMESPACE__.'\\row_order';
 
     protected $_primary = ['id'];
 
@@ -127,7 +128,7 @@ class table_orders extends Table {
         ],
         'User' => [
             self::COLUMNS           => 'user_id',
-            self::REF_TABLE_CLASS   => 'tableUsers',
+            self::REF_TABLE_CLASS   => '\\tableUsers',
             self::REF_COLUMNS       => 'id'
         ],
         'Invoice' => [

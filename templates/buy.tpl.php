@@ -27,9 +27,9 @@ use pdima88\phpassets\Assets;
 <div class="container">
 <h1><?= $pageTitle ?></h1>
 
-<div id="paidAccessTariffPlansTabs">
-    <h2 style="float:left;margin-left:20px;margin-right:50px;font-size:20px;line-height:20px;">Выберите тарифный план:</h2>
-<ul class="nav nav-tabs" role="tablist">
+<div class="tabs-menu">
+    <h2>Выберите тарифный план:</h2>
+<ul class="tabbed">
     <?php foreach ($plans as $plan): ?>
         <li style="bottom:-10px" role="presentation"<?= ($selectedPlan == $plan['id']) ? ' class="active"' : '' ?>">
             <a href="#p<?= $plan['id'] ?>" aria-controls="p<?= $plan['id'] ?>"
@@ -43,14 +43,18 @@ use pdima88\phpassets\Assets;
 <div class="tab-content">
     <?php foreach ($plans as $plan): ?>
     <div role="tabpanel" class="tab-pane fade<?= ($selectedPlan == $plan['id']) ? ' in active' : '' ?>" id="p<?= $plan['id'] ?>">
-        <h3 style="margin-left:20px;"><?= $plan['title'] ?></h3>
-        <?php if ($plan['hint'] ?? false): ?>
-        <div class="well" style="margin: 20px">
-            <?= $plan['hint'] ?>
-        </div>
-        <?php endif; ?>
+        <div class="gui-panel">
+        <h3><?= $plan['title'] ?></h3>
+            <div class="paidaccess-tariffplan-description">
+                <?php if ($plan['hint'] ?? false): ?>
 
-        <table class="table table-bordered" style="margin:0 auto; max-width: 400px">
+                    <?= $plan['hint'] ?>
+
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <table class="" style="margin:0 auto; max-width: 400px">
             <thead>
                 <tr>
                 <th></th>

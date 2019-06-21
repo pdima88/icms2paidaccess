@@ -3,6 +3,7 @@ namespace pdima88\icms2paidaccess\tables;
 
 use pdima88\icms2ext\Format;
 use pdima88\icms2ext\Table;
+use Zend_Db_Table_Row_Abstract;
 
 /**
  * Тариф
@@ -54,7 +55,7 @@ class row_tariff extends Zend_Db_Table_Row_Abstract {
 class table_tariffs extends Table {
     protected $_name = 'paidaccess_tariffs';
 
-    protected $_rowClass = 'row_tariff';
+    protected $_rowClass = __NAMESPACE__.'\\row_tariff';
 
     protected $_primary = ['id'];
 
