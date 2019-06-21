@@ -1,0 +1,10 @@
+.paidaccess-plan {
+    border: 1px solid #000;
+    display: inline-block;
+    width: 250px;
+    margin: 10px;
+}
+
+.paidaccess-plan.selected {
+    background-color: #3d9a65;
+}

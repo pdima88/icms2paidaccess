@@ -1,0 +1,26 @@
+{
+    "name": "pdima88/icms2paidaccess",
+    "description": "Paidaccess component for InstantCMS 2",
+    "type": "library",
+    "require": {        
+        "pdima88/icms2ext": "dev-master",
+        "pdima88/icms2pay": "dev-master"
+    },
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Puchkin Dmitriy",
+            "email": "pdima88@mail.ru"
+        }
+    ],
+    "extra": {
+        "assets-files": [
+            "assets/paidaccess.css"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "pdima88\\icms2paidaccess\\": "/src"
+        }
+    } 
+}
