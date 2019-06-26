@@ -3,8 +3,7 @@ use pdima88\phpassets\Assets;
 /** @var cmsTemplate $this */
     $pageTitle = 'Приобрести подписку';
     $this->setPageTitle($pageTitle);
-    $this->addHead(Assets::getCss());
-    echo Assets::getJs();
+
     $this->addControllerCSS('paidaccess');
     $this->addTplCSSName('rspinner');
     if (!isset($selectedPlan)) {
@@ -27,7 +26,7 @@ use pdima88\phpassets\Assets;
 <div class="container">
 <h1><?= $pageTitle ?></h1>
 
-<div class="tabs-menu">
+<div id="paidaccessTariffs" class="tabs-menu">
     <h2>Выберите тарифный план:</h2>
 <ul class="tabbed">
     <?php foreach ($plans as $plan): ?>
@@ -36,13 +35,13 @@ use pdima88\phpassets\Assets;
                role="tab" data-toggle="tab"><?= $plan['title'] ?></a></li>
     <?php endforeach; ?>
 </ul>
-</div>
+
 
     <form method="post">
 
-<div class="tab-content">
+
     <?php foreach ($plans as $plan): ?>
-    <div role="tabpanel" class="tab-pane fade<?= ($selectedPlan == $plan['id']) ? ' in active' : '' ?>" id="p<?= $plan['id'] ?>">
+    <div class="tab" id="p<?= $plan['id'] ?>">
         <div class="gui-panel">
         <h3><?= $plan['title'] ?></h3>
             <div class="paidaccess-tariffplan-description">
@@ -81,6 +80,7 @@ use pdima88\phpassets\Assets;
         </table>
     </div>
     <?php endforeach; ?>
+
 </div>
 
 <div id="paidaccessSelectedPrice" style="font-size: 24px; text-align: center;<?= $selectedTariff ? '': 'display:none' ?>"><br>
@@ -149,14 +149,16 @@ use pdima88\phpassets\Assets;
 
 <script>
     $(function(){
+        initTabs('#paidaccessTariffs');
+
         var selectedTariffId = <?= $selectedTariffId ?>;
         var plans = <?= $plans ? json_encode($plans) : '[]' ?>;
         var tariffs = <?= $tariffs ? json_encode($tariffs) : '[]' ?>;
         if (selectedTariffId) setSelectedTariffId(selectedTariffId);
 
-        $('#paidAccessTariffPlansTabs a').click(function (e) {
+        $('#paidaccessTariffs .tabbed a').click(function (e) {
             e.preventDefault();
-            $(this).tab('show');
+            //$(this).tab('show');
             var tabid = $(this).attr('aria-controls');
             var planid = tabid.substr(1);
             var selectedPlan = plans[planid];
@@ -175,17 +177,22 @@ use pdima88\phpassets\Assets;
             }
 
             if (switchToTariff) {
-                selectTariff(switchToTariff.id);
+                switchTariff(switchToTariff.id);
             }
         });
 
+        function switchTariff(id) {
+            $('#tariff'+id).prop('checked', true);
+            setSelectedTariffId(id);
+        }
+
         function selectTariff(id) {
             var t = tariffs[id];
-            $('#tariff'+id).prop('checked', true);
             if (t) {
-                $('#paidAccessTariffPlansTabs a[aria-controls="p'+t.plan_id+'"]').tab('show');
+                //$('#paidAccessTariffPlansTabs a[aria-controls="p'+t.plan_id+'"]').tab('show');
+                $('#paidaccessTariffs ul.tabbed a[href = "#p'+t.plan_id+'"]').trigger('click');
             }
-            setSelectedTariffId(id);
+            switchTariff(id);
         }
 
         function selectTariffClick() {

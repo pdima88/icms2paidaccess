@@ -3,7 +3,9 @@ namespace pdima88\icms2paidaccess\actions;
 
 use cmsAction;
 use cmsCore;
+use cmsTemplate;
 use cmsUser;
+use Nette\Utils\Json;
 
 /**
  * @property modelPaidaccess $model
@@ -11,20 +13,21 @@ use cmsUser;
 class bonus extends cmsAction
 {
     const SESS_KEY = 'paidaccess_bonus_last_run';
-    
+
     public function run()
     {
+        $tpl = cmsTemplate::getInstance();
         if (!$this->request->isAjax()) cmsCore::error404();
 
         if (!cmsUser::isLogged()) {
-            $this->json('reload');
+            sendJson('reload');
         }
 
         $sessCheck = $_SESSION[self::SESS_KEY] ?? false;
         $_SESSION[self::SESS_KEY] = now();
 
         if ($sessCheck && ((time() - strtotime($sessCheck)) < 3)) {
-            $this->jsonError('not_found');
+            sendJsonError('not_found');
         }
 
         $code = $this->request->get('code', '');
@@ -46,7 +49,7 @@ class bonus extends cmsAction
                         } else {
                             $res = 'invalid_tariff';
                         }
-                        $this->json([
+                        sendJson([
                             'result' => $res,
                             'bonus' => [
                                 'value' => $bonusCode['bonus'] ?? 0,
@@ -55,14 +58,14 @@ class bonus extends cmsAction
                             ],                            
                         ]);
                     } else {
-                        $this->jsonError('activated');
+                        sendJsonError('activated');
                         // TODO: check can cancel activation
                     }
                 } else {
-                    $this->jsonError('not_found');
+                    sendJsonError('not_found');
                 }
             } else {
-                $this->jsonError('not_found');
+                sendJsonError('not_found');
             }
         }
     }
