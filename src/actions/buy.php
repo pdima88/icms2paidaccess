@@ -5,6 +5,7 @@ use pdima88\icms2ext\Format;
 use cmsAction;
 use cmsUser;
 use cmsTemplate;
+use cmsRequest;
 
 /**
  * @property modelPaidaccess $model
@@ -16,13 +17,20 @@ class buy extends cmsAction{
     public function run($plan_id = null){
         if (!cmsUser::isLogged()) cmsUser::goLogin();
 
+        $template = cmsTemplate::getInstance();
+
+        if (!cmsUser::getInstance()->get('email_confirmed')) {
+            cmsUser::addSessionMessage('Для приобретения подписки необходимо подтвердить ваш адрес электронной почты');            
+            $this->redirect(href_to('auth', 'verify').'?back='.urlencode($this->cms_core->uri));
+        }
+
         if ($this->request->has('submit')) {
             $this->submit($this->request->get('submit'));
         }
 
         $selectedTariff = false;
 
-        $template = cmsTemplate::getInstance();
+        
 
         $tariffPlans = $this->model->getActiveTariffPlans();
         $tariffsByPlanIds = [];
