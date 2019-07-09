@@ -20,7 +20,7 @@ class row_tariff extends Zend_Db_Table_Row_Abstract {
     function __get($columnName)
     {
         if ($columnName == 'plan') {
-            return $this->findParenttablePaidaccess_Plans();
+            return $this->findParentRow(__NAMESPACE__.'\\table_plans');
         }
         if ($columnName == 'name') {
             return Format::formatDuration($this->period);

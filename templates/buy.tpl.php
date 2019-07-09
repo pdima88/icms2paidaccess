@@ -40,8 +40,8 @@ use pdima88\phpassets\Assets;
     <form method="post">
 
 
-    <?php foreach ($plans as $plan): ?>
-    <div class="tab" id="p<?= $plan['id'] ?>">
+    <?php $first = true; foreach ($plans as $plan): ?>
+    <div class="tab" id="p<?= $plan['id'] ?>"<?php if ($first) { $first = false; } else { ?> style="display:none;"<?php } ?>>
         <div class="gui-panel">
         <h3><?= $plan['title'] ?></h3>
             <div class="paidaccess-tariffplan-description">

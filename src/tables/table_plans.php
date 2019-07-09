@@ -43,7 +43,7 @@ class row_plan extends Zend_Db_Table_Row_Abstract {
 class table_plans extends Table {
     protected $_name = 'paidaccess_plans';
 
-    protected $_rowClass = 'row_plan';
+    protected $_rowClass = __NAMESPACE__.'\\row_plan';
 
     protected $_primary = ['id'];
 
