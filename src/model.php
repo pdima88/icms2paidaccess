@@ -4,12 +4,17 @@ namespace pdima88\icms2paidaccess;
 use pdima88\icms2ext\Model as BaseModel;
 use Exception;
 use cmsModel;
+use pdima88\icms2paidaccess\tables\table_orders;
+use pdima88\icms2paidaccess\tables\table_plans;
+use pdima88\icms2paidaccess\tables\table_tariffs;
+use pdima88\icms2paidaccess\tables\table_demo;
 
 /**
  * Class modelPaidaccess
- * @property tablePaidaccess_Orders $orders
- * @property tablePaidaccess_Tariffs $tariffs
- * @property tablePaidaccess_Plans $plans
+ * @property table_orders $orders
+ * @property table_tariffs $tariffs
+ * @property table_plans $plans
+ * @property table_demo $demo
  */
 class model extends BaseModel {
     
@@ -20,14 +25,14 @@ class model extends BaseModel {
     
     function __get($name)
     {
-        if ($name == 'orders' || $name == 'tariffs' || $name == 'plans') {
+        if ($name == 'orders' || $name == 'tariffs' || $name == 'plans' || $name == 'demo') {
             return $this->getTable($name);
         }
         throw new Exception('Unknown property '.$name);
     }
 
     function getTariffPlans() {
-        $this->orderBy('sortorder', 'asc');
+        $this->orderBy('level', 'asc');
         return $this->get(self::TABLE_TARIFF_PLANS);
     }
 

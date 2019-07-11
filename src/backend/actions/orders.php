@@ -4,12 +4,17 @@ namespace pdima88\icms2paidaccess\backend\actions;
 use Nette\Utils\Html;
 use pdima88\icms2ext\crudAction;
 use pdima88\icms2paidaccess\tables\table_orders;
+use pdima88\icms2ext\GridHelper;
+use pdima88\icms2paidaccess\model;
 
 /**
- * @property modelPaidaccess $model
+ * @property model $model
  */
 
 class orders extends crudAction {
+
+    protected $indexTpl = 'grid';
+    protected $pageTitle = 'Заказы';
 
     function getGrid() {
 
@@ -17,8 +22,12 @@ class orders extends crudAction {
             ->joinLeftBy(table_orders::FK_USER, 'u')
             ->columns([
                 'o.*',
-                'user_fio' => 'CONCAT_WS(" ", u.lname, u.fname, u.mname)'
+                'user_name' => 'u.nickname',
+                'user_email' => 'u.email',
+                'user_phone' => 'u.phone'
             ]);
+
+        $tariffPlans = $this->model->getTariffPlansList();
 
         $grid = [
             'id' => 'orders',
@@ -28,87 +37,78 @@ class orders extends crudAction {
             ],
 
             'multisort' => true,
-            'paging' => 15,
-
+            'paging' => 10,
+            'rownum' => false,
             'url' => $this->cms_core->uri_absolute,
             'ajax' => $this->cms_core->uri_absolute,
-            'actions' => Html::el('div', [
-                'class' => 'datagrid'
-            ])->setHtml(Html::el('div', [
-                'class' => 'actions'
-            ])->setHtml(Html::el('a', [
-                    'title' => 'Изменить',
-                    'class' => 'edit',
+            'actions' => GridHelper::getActions([
+                'edit' => [
+                    'title' => 'Изменить',                    
                     'href'  => href_to('admin', 'controllers', ['edit', $this->name, 'tariffs_edit', '{id}']) . '?back={returnUrl}'
-                ]).Html::el('a', [
-                    'title' => 'Удалить',
-                    'class' => 'delete',
+                ],
+                'delete' => [
+                    'title' => 'Удалить',                    
                     'href' => '',
                     'onclick' => 'return $.S4Y.grid.confirmDelete(this)',
-                ]))),
+                ]
+            ]),
             'delete' => href_to('admin', 'controllers', ['edit', $this->name, 'tariffs_delete', '{id}']). '?back={returnUrl}',
             'columns' => [
                 'id' => [
-                    'title' => 'ID',
+                    'title' => 'ID заказа',
                     'width' => 70,
                     'sort' => true,
                     'filter' => 'equal'
-                ],
-                'tariff_plan' => [
-
-                ],
-                'tariff_period' => [
-
-                ],
+                ],                
                 'user_id' => [
-                    'title' => 'ID пользователя',
+                    'title' => 'ID польз.',
                     'width' => 70,
                     'sort' => true,
                     'filter' => 'equal'
                 ],
-                'user_fio' => [
+                'user_name' => [
                     'title' => 'Ф.И.О. пользователя',
                     'sort' => true,
                     'filter' => 'text'
-                ]
+                ],
+                'user_email' => [
+                    'title' => 'E-mail',
+                    'sort' => true,
+                    'filter' => 'text'
+                ],
+                'user_phone' => [
+                    'title' => 'Номер телефона',
+                    'sort' => true,
+                    'filter' => 'text'
+                ],
+                'plan_id' => [
+                    'title' => 'Тарифный план',
+                    'format' => $tariffPlans,
+                    'filter' => 'select',
+                    'sort' => true,
+                ],
+                'period' => [
+                    'title' => 'Срок подписки (дней)',
+                    'align' => 'center',
+                    'width' => 70,
+                    'sort' => true,
+                    'filter' => 'equal'
+                ],
+                'discount' => [
+                    'title' => 'Скидка',
+                    'sort' => true,
+                    'filter' => 'text'
+                ],
+                'total_amount' => [
+                    'title' => 'Цена с учетом скидки',
+                    'format' => 'format_currency',
+                    'align' => 'right',
+                    'width' => 100,
+                    'sort' => true,
+                    'filter' => 'equal'
+                ],
             ]
         ];
-
-
-        $grid['columns']['period'] = [
-            'title' => 'Срок подписки (дней)',
-            'align' => 'center',
-            'width' => 150,
-            'sort' => true,
-            'filter' => 'equal'
-        ];
-        $grid['columns']['price'] = [
-            'title' => 'Цена',
-            'format' => '%.f',
-            'width' => 100,
-            'align' => 'right',
-            'sort' => true,
-            'filter' => 'equal'
-        ];
-        $grid['columns']['bonus'] = [
-            'title' => 'Кол-во бонусных вопросов',
-            'align' => 'center',
-            'sort' => true,
-            'filter' => 'equal'
-        ];
-        $grid['columns']['is_active'] = [
-            'title' => 'Тариф активен',
-            'width' => 120,
-            'align' => 'center',
-            'sort' => true,
-            'format' => 'checkbox',
-            'filter' => 'select',
-        ];
-        $grid['columns']['orders_count'] = [
-            'title' => 'Кол-во оплаченных заказов',
-            'sort' => true,
-        ];
-
         return $grid;
     }
 

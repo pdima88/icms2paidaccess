@@ -89,11 +89,11 @@ use pdima88\phpassets\Assets;
     Стоимость: <b id="lblSelectedTariffPrice"></b> сум
 
     <div id="paidaccessFree" style="display:none">
-        <button type="submit" name="submit" value="free" class="btn btn-lg btn-success">Получить бесплатно</button>
+        <button type="submit" name="submit" value="free" class="button">Получить бесплатно</button>
     </div>
 
     <div id="paidaccessPay" style="display: none;">
-        <button type="submit" name="submit" value="pay" class="btn btn-lg btn-success">Перейти к оплате</button>
+        <button type="submit" name="submit" value="pay" class="button">Перейти к оплате</button>
     </div>
 
     <div id="paidaccessUseBonuscode" v-if="selectedTariff">
