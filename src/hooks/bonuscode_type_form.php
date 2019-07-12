@@ -8,7 +8,7 @@ use fieldListMultiple;
 class bonuscode_type_form extends cmsAction {
 
     public function run($component, $form){
-        if ($component == 'paidaccess') {
+        if ($component == $this->controller->name) {
             $form[] = [
                 'type' => 'fieldset',
                 'title' => 'Параметры',

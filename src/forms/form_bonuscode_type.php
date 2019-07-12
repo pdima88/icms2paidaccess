@@ -1,15 +1,21 @@
 <?php
-use pdima88\icms2ext\Format;
+namespace pdima88\icms2paidaccess\forms;
 
-/** @property paidaccess $controller */
-class formPaidaccessBonuscodeType extends cmsForm {
+use pdima88\icms2ext\Format;
+use cmsForm;
+use fieldString;
+use fieldText;
+use fieldList;
+use pdima88\icms2paidaccess\model;
+
+class form_bonuscode_type extends cmsForm {
 
     public function init(){
-
+        $model = model::getInstance();
         $tariffsList = ['all' => 'Все'];
-        $tariffs = $this->controller->model_paidaccess->getTariffs();
+        $tariffs = $model->getTariffs();
 
-        $plans = $this->controller->model_paidaccess->getTariffPlans();
+        $plans = $model->getTariffPlans();
         foreach ($plans as $plan) {
             $tariffsList['p'.$plan['id']] = $plan['title'].':все';
             foreach ($tariffs as $tariff) {

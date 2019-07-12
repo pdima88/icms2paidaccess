@@ -8,6 +8,7 @@ class manifest
         return [
             'bonuscode_component_list',
             'bonuscode_type_form',
+            'content_before_item',
         ];
     }
 

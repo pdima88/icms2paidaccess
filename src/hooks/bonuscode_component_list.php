@@ -6,7 +6,7 @@ use cmsAction;
 class bonuscode_component_list extends cmsAction {
 
     public function run($list){
-        $list['paidaccess'] = 'Платный доступ';
+        $list[$this->controller->name] = 'Платный доступ';
         return $list;
     }
 

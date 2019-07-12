@@ -3,9 +3,9 @@ namespace pdima88\icms2paidaccess\backend\actions;
 
 use Nette\Utils\Html;
 use pdima88\icms2ext\crudAction;
-use pdima88\icms2paidaccess\tables\table_orders;
 use pdima88\icms2paidaccess\model;
 use pdima88\icms2paidaccess\tables\table_demo;
+use pdima88\icms2ext\GridHelper;
 
 /**
  * @property model $model
@@ -33,7 +33,11 @@ class demo extends crudAction {
             'sort' => [
                 'when_activated' => 'desc',
             ],
-
+            'actions' => GridHelper::getActions([
+                'delete' => [
+                    'title' => 'Удалить',
+                ]
+            ]),
             'multisort' => true,
             'paging' => 15,
 
@@ -49,59 +53,32 @@ class demo extends crudAction {
                 'name' => [
                     'title' => 'Имя пользователя',
                     'filter' => 'text',
-
+                    'sort' => true,
+                ],
+                'email' => [
+                    'title' => 'E-mail',
+                    'filter' => 'text',
+                    'sort' => true,
+                ],
+                'phone' => [
+                    'title' => 'Номер телефона',
+                    'filter' => 'text',
+                    'sort' => true,
                 ],
                 'when_activated' => [
                     'title' => 'Дата/время активации',
                     'filter' => 'dateRange',
                     'sort' => true,
+                    'filter-opens' => 'left',
                 ],
-                'user_id' => [
-                    'title' => 'ID пользователя',
-                    'width' => 70,
+                'when_expiried' => [
+                    'title' => 'Дата/время действия',
+                    'filter' => 'dateRange',
                     'sort' => true,
-                    'filter' => 'equal'
+                    'filter-opens' => 'left',
                 ],
-                'user_fio' => [
-                    'title' => 'Ф.И.О. пользователя',
-                    'sort' => true,
-                    'filter' => 'text'
-                ]
+                
             ]
-        ];
-
-        $grid['columns']['period'] = [
-            'title' => 'Срок подписки (дней)',
-            'align' => 'center',
-            'width' => 150,
-            'sort' => true,
-            'filter' => 'equal'
-        ];
-        $grid['columns']['price'] = [
-            'title' => 'Цена',
-            'format' => '%.f',
-            'width' => 100,
-            'align' => 'right',
-            'sort' => true,
-            'filter' => 'equal'
-        ];
-        $grid['columns']['bonus'] = [
-            'title' => 'Кол-во бонусных вопросов',
-            'align' => 'center',
-            'sort' => true,
-            'filter' => 'equal'
-        ];
-        $grid['columns']['is_active'] = [
-            'title' => 'Тариф активен',
-            'width' => 120,
-            'align' => 'center',
-            'sort' => true,
-            'format' => 'checkbox',
-            'filter' => 'select',
-        ];
-        $grid['columns']['orders_count'] = [
-            'title' => 'Кол-во оплаченных заказов',
-            'sort' => true,
         ];
 
         return $grid;

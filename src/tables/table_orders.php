@@ -9,6 +9,7 @@ use cmsUser;
 use cmsModel;
 use Exception;
 use Zend_Db_Table_Row_Abstract;
+use tableUsers;
 
 /**
  * Class paidaccessOrder
@@ -34,6 +35,7 @@ use Zend_Db_Table_Row_Abstract;
  * @property string $date_expiry Окончание срока действия
  * @property bool $is_active Активен ли заказ (заказ активирован и у него не истек срок действия)
  * @property bool $pay_type Тип оплаты (см. {@see tablePaidaccess_Orders::$payTypes})
+ * @property int $level Уровень доступа
  *
  * @method table_orders getTable()
  */
@@ -256,6 +258,25 @@ class table_orders extends Table {
         return $invoice;
     }
 
+    function updateLevelByUserId($userId) {
+        $this->setExpiried($userId);
+        $maxLevelOrder = $this->fetchRow([
+            'user_id = ? AND is_active = 1' => $userId
+        ], 'level DESC');
+        if ($maxLevelOrder) {
+            $level = $maxLevelOrder->level;
+        } else {
+            $level = null;
+        }        
+        tableUsers::updateById($userId, ['paidaccess_level' => $level]);
+    }
 
+    function setExpiried($userId = null) {
+        $where = [
+            'is_active = 1 AND date_expiry <= ?' => now()
+        ];
+        if ($userId) $where['user_id = ?'] = $userId;
+        $this->update(['is_active' => 0], $where);
+    }
 
 }
