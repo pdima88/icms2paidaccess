@@ -7,6 +7,7 @@ use cmsUser;
 use tableUsers;
 use cmsTemplate;
 use pdima88\icms2paidaccess\frontend;
+use cmsForm;
 
 /**
  * @property model $model
@@ -29,6 +30,12 @@ class demo extends cmsAction {
                 $status = 1;
                 $user = tableUsers::getById(cmsUser::getInstance()->id)->toArray();
                 $form = $this->getForm('user_info', [$user]);
+            } else {
+                $status = 2;
+                $form = new cmsForm();
+                $form->setParams([
+                    'submit' => 'Активировать демо-доступ'
+                ]);
             }
         }
 
