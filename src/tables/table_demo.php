@@ -44,4 +44,7 @@ class table_demo extends Table {
 
     const FK_USER = __CLASS__.'.User';
 
+    function getByUserId($userId) {
+        return $this->fetchRow(['user_id = ?' => $userId]);
+    }
 }
