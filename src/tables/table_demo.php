@@ -8,11 +8,9 @@ use Zend_Db_Table_Row_Abstract;
 /**
  * Тариф
  * @property int $id ID
- * @property string $title Название тарифного плана
- * @property array $groups Группы, присваиваемые пользователю
- * @property string $hint Описание тарифного плана
- * @property bool $is_active Активен ли тарифный план
- * @property int $sortorder Порядок вывода тарифного плана
+ * @property int $user_id ID пользователя
+ * @property string $when_activated Дата активации демо-доступа
+ * @property string $when_expiried Дата истечения срока демо-доступа, если NULL - бессрочно
  */
 class row_demo extends Zend_Db_Table_Row_Abstract {
     function __get($columnName)
@@ -44,6 +42,10 @@ class table_demo extends Table {
 
     const FK_USER = __CLASS__.'.User';
 
+    /**
+     * @param $userId
+     * @return null|row_demo
+     */
     function getByUserId($userId) {
         return $this->fetchRow(['user_id = ?' => $userId]);
     }

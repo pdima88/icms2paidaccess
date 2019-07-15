@@ -13,12 +13,27 @@
 </p>
 
 
-<?php $this->renderForm($form, $data); ?>
+<?php $this->renderForm($form, $data, [
+        'submit' => [
+            'title' => 'Активировать демо-доступ'
+        ]
+    ]); ?>
 
 <?php else: ?>
-
+<?php if ($success): ?>
+        <?php if ($demoPeriod): ?>
+            <p>
+                Демо доступ активирован на <?= $demoPeriod ?> дней
+            </p>
+        <?php else: ?>
+            <p>
+                Демо доступ активирован
+            </p>
+        <?php endif; ?>
+<?php else: ?>
 <p>
 Вы уже активировали демо-доступ
 </p>
+<?php endif; ?>
 
 <?php endif; ?>

@@ -4,10 +4,12 @@ namespace pdima88\icms2paidaccess;
 use pdima88\icms2ext\Model as BaseModel;
 use Exception;
 use cmsModel;
+use pdima88\icms2paidaccess\tables\row_order;
 use pdima88\icms2paidaccess\tables\table_orders;
 use pdima88\icms2paidaccess\tables\table_plans;
 use pdima88\icms2paidaccess\tables\table_tariffs;
 use pdima88\icms2paidaccess\tables\table_demo;
+use tableUsers;
 
 /**
  * Class modelPaidaccess
@@ -67,7 +69,7 @@ class model extends BaseModel {
 
     function getActiveTariffPlans() {
         $this->filter('is_active = 1');
-        $this->orderBy('sortorder', 'asc');
+        $this->orderBy('level', 'asc');
         return $this->get(self::TABLE_TARIFF_PLANS);
     }
 
@@ -98,6 +100,31 @@ class model extends BaseModel {
         }
         return false;
 
+    }
+
+    function updateLevelByUserId($userId) {
+        $this->orders->setExpiried($userId);
+        /** @var row_order $maxLevelOrder */
+        $maxLevelOrder = $this->orders->fetchRow([
+            'user_id = ? AND is_active = 1' => $userId
+        ], 'level DESC');
+        $demo = $this->demo->getByUserId($userId);
+        $paidaccessExpiried = null;
+        if ($maxLevelOrder) {
+            $level = $maxLevelOrder->level;
+            $paidaccessExpiried = $maxLevelOrder->date_expiry;
+        } else {
+            if ($demo && (empty($demo->when_expiried) || $demo->when_expiried > now())) {
+                $level = 0;
+                $paidaccessExpiried = $demo->when_expiried;
+            } else {
+                $level = null;
+            }
+        }
+        tableUsers::updateById($userId, [
+            'paidaccess' => $paidaccessExpiried,
+            'paidaccess_level' => $level
+        ]);
     }
 
 }

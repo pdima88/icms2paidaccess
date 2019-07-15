@@ -13,11 +13,12 @@ use pdima88\icms2paidaccess\frontend;
  * @property modelPay $model_pay
  * @property pay $controller_pay
  * @property frontend $controller
+ * @mixin frontend
  */
 class buy extends cmsAction
 {
     public function run($plan_id = null){
-        $this->controller->checkEmailConfirmed();
+        $this->checkEmailConfirmed();
 
         $template = cmsTemplate::getInstance();
 

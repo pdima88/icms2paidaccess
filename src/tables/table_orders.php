@@ -258,19 +258,6 @@ class table_orders extends Table {
         return $invoice;
     }
 
-    function updateLevelByUserId($userId) {
-        $this->setExpiried($userId);
-        $maxLevelOrder = $this->fetchRow([
-            'user_id = ? AND is_active = 1' => $userId
-        ], 'level DESC');
-        if ($maxLevelOrder) {
-            $level = $maxLevelOrder->level;
-        } else {
-            $level = null;
-        }        
-        tableUsers::updateById($userId, ['paidaccess_level' => $level]);
-    }
-
     function setExpiried($userId = null) {
         $where = [
             'is_active = 1 AND date_expiry <= ?' => now()

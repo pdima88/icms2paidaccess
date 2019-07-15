@@ -8,11 +8,11 @@ use cmsUser;
 /** @property modelPaidaccess $model */
 class frontend extends cmsFrontend {
    
-    function checkEmailConfirmed() 
+    function checkEmailConfirmed($msg = null)
     {
         if (!cmsUser::isLogged()) cmsUser::goLogin();
         if (!cmsUser::getInstance()->get('email_confirmed')) {
-            cmsUser::addSessionMessage('Для приобретения подписки необходимо подтвердить ваш адрес электронной почты');            
+            cmsUser::addSessionMessage($msg ?? 'Для приобретения подписки необходимо подтвердить ваш адрес электронной почты');
             $this->redirect(href_to('auth', 'verify').'?back='.urlencode($this->cms_core->uri));
         }
     }
