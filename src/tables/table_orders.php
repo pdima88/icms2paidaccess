@@ -17,11 +17,11 @@ use tableUsers;
  * @property int $user_id ID пользователя создавшего заказ
  * @property cmsUser $user Пользователь, создавший заказ
  * @property int $tariff_id ID тарифа
- * @property paidaccessTariff $tariff Тариф
+ * @property row_tariff $tariff Тариф
  * @property int $plan_id ID тарифного плана
- * @property paidaccessTariffPlan $plan Тарифный план
+ * @property row_plan $plan Тарифный план
  * @property double $amount Сумма
- * @property double $discount Скидка, в %
+ * @property string $discount Скидка
  * @property double $total_amount Сумма с учетом скидки
  * @property int $bonuscode_id ID бонус-кода
  * @property int $invoice_id ID счета
@@ -34,7 +34,7 @@ use tableUsers;
  * @property string $date_start Начало срока действия (Дата активации или дата окончания последней активированной подписки с этим тарифом)
  * @property string $date_expiry Окончание срока действия
  * @property bool $is_active Активен ли заказ (заказ активирован и у него не истек срок действия)
- * @property bool $pay_type Тип оплаты (см. {@see tablePaidaccess_Orders::$payTypes})
+ * @property string $pay_type Тип оплаты (см. {@see tablePaidaccess_Orders::$payTypes})
  * @property int $level Уровень доступа
  *
  * @method table_orders getTable()
@@ -107,7 +107,7 @@ class row_order extends Zend_Db_Table_Row_Abstract {
     ;
 
  *
- * @method static paidaccessOrder getById($id) Возвращает заказ по ID
+ * @method static row_order getById($id) Возвращает заказ по ID
  * @method paidaccessOrder createRow(array $data = [], $defaultSource = null)
  */
 class table_orders extends Table {

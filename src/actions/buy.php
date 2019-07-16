@@ -23,7 +23,9 @@ class buy extends cmsAction
         $template = cmsTemplate::getInstance();
 
         if ($this->request->has('submit')) {
-            $this->submit($this->request->get('submit'));
+            if (false !== ($res = $this->submit($this->request->get('submit')))) {
+                return $res;
+            }
         }
 
         $selectedTariff = false;
@@ -66,7 +68,7 @@ class buy extends cmsAction
                 $plans[$plan['id']] = $plan;
             }
         }
-        
+
         return $template->render('buy', array(
             'plans' => $plans,
             'tariffs' => $tariffs,
@@ -109,24 +111,20 @@ class buy extends cmsAction
             $order->pay_type = 'free';
             $order->date_paid = now();
             $order->save();
-            $order->activate();
-
+            $this->redirectToAction('checkout', $order->id);
         } elseif ($type == 'pay') {
             $order->pay_type = 'pay';
             $order->save();
-            $invoice = $order->makeInvoice();
-            $order->save();
-            $this->redirectTo('pay', $invoice->id);
-            
+            $this->redirectToAction('checkout', $order->id);
         } elseif ($type == 'bonus') {
             // TODO: check bonus code, check price,
             // TODO: if price is 0, add free order by bonuscode
             // TODO: if price is more than zero, create invoice, order and redirect to invoice pay
         }
-        
+
         //$this->redirectTo('pay', 4);
     }
 
-    
+
 
 }

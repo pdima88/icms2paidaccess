@@ -9,7 +9,7 @@ use Zend_Db_Table_Row_Abstract;
  * Тариф
  * @property int $id ID тарифа
  * @property int $plan_id ID тарифного плана
- * @property paidaccessTariffPlan $plan Тарифный план
+ * @property row_plan $plan Тарифный план
  * @property string $name Автоматически формируемое название (из срока действия тарифа, например, 1 месяц, 3 дня и т.д.)
  * @property int $period Срок действия тарифа (дней)
  * @property float $price Цена

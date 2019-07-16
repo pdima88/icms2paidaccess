@@ -44,9 +44,8 @@ class demo extends cmsAction {
                     $errors = $form->validate($this, $data);
 
                     if (!$errors) {
+                        $data['regstatus'] = 2;
                         $this->model_users->updateUser(cmsUser::getId(), $data);
-
-                        
                     }
 
                 }
