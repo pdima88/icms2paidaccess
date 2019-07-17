@@ -102,12 +102,13 @@ class model extends BaseModel {
 
     }
 
-    function updateLevelByUserId($userId) {
+    function refreshByUserId($userId) {
         $this->orders->setExpiried($userId);
-        /** @var row_order $maxLevelOrder */
-        $maxLevelOrder = $this->orders->fetchRow([
+        $activeOrders = $this->orders->fetchRows([
             'user_id = ? AND is_active = 1' => $userId
         ], 'level DESC');
+        /** @var row_order $maxLevelOrder */
+        $maxLevelOrder = (($activeOrders->count() > 0) ? $activeOrders->offsetGet(0) : null);
         $demo = $this->demo->getByUserId($userId);
         $paidaccessExpiried = null;
         if ($maxLevelOrder) {
@@ -121,9 +122,15 @@ class model extends BaseModel {
                 $level = null;
             }
         }
+        $questions = 0;
+        /** @var row_order $order */
+        foreach ($activeOrders as $order) {
+            $questions += $order->questions;
+        }
         tableUsers::updateById($userId, [
             'paidaccess' => $paidaccessExpiried,
-            'paidaccess_level' => $level
+            'paidaccess_level' => $level,
+            'questions' => $questions
         ]);
     }
 

@@ -50,7 +50,7 @@ class row_tariff extends Zend_Db_Table_Row_Abstract {
     ENGINE=MyISAM
     AUTO_INCREMENT=28
  *
- * @method static paidaccessTariff getById($id) Возвращает тариф по ID
+ * @method static row_tariff getById($id) Возвращает тариф по ID
  */
 class table_tariffs extends Table {
     protected $_name = 'paidaccess_tariffs';

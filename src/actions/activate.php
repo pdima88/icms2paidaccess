@@ -14,7 +14,7 @@ use pdima88\icms2pay\model as modelPay;
 use tableUsers;
 
 /**
- * @property model $model
+ * @property model $model 
  * @property frontend $controller
  * @mixin frontend
  */
@@ -26,12 +26,16 @@ class activate extends cmsAction
         $template = cmsTemplate::getInstance();
 
         $errors = [];
+        $user = null;
+        $form = false;
 
         $order = $this->model->orders->getById($orderId);
         if (!$order ||
-            $order->user_id != cmsUser::getId() ||
-            $order->date_activated) {
-            $errors[] = 'Заказ не найден или уже был активирован';
+            $order->user_id != cmsUser::getId()) {
+            $errors[] = 'Заказ не найден';
+            $order = false;
+        } elseif ($order->date_activated) {
+            $errors[] = 'Заказ уже был активирован';
         } elseif (!$order->date_paid) {
             $errors[] = 'Заказ не оплачен';
         }
@@ -39,7 +43,7 @@ class activate extends cmsAction
         if (empty($errors)) {
             $user = tableUsers::getById(cmsUser::getId())->toArray();
 
-            if ($user['regstatus'] < tableUsers::REG_STATUS_COMPANY) {
+            if ($user['regstatus'] < tableUsers::REG_STATUS_JOB) {
                 $form = $this->getForm('userinfo', [$user]);
 
                 if ($this->request->has('submit')) {                    
@@ -57,16 +61,30 @@ class activate extends cmsAction
         }
 
         if ($this->request->has('submit')) {
+            if ($user && $user['regstatus'] < tableUsers::REG_STATUS_JOB) {
+                $user = $form->parse($this->request, true, $user);
+                $errors = $form->validate($this, $user);
 
+                if (!$errors) {
+                    $user['regstatus'] = 2;
+                    $this->model_users->updateUser(cmsUser::getId(), $user);
+                }
+
+            }
+            
+            if (!$errors) {
+                $order->activate();
+                $form = false;
+            }
         }
 
-        return $template->render('checkout', array(
-            'tariff' => $tariff,
+        return $template->render('activate', array(
             'order' => $order,
-            'plan' => $plan,
-            'tariff' => $tariff,
+            'tariff' => $order->tariff,
+            'plan' => $order->plan,
             'user' => $user,
             'form' => $form,
+            'errors' => $errors,
         ));
     }
 }

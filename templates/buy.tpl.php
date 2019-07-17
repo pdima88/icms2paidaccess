@@ -29,19 +29,24 @@ use pdima88\phpassets\Assets;
 <div id="paidaccessTariffs" class="tabs-menu">
     <h2>Выберите тарифный план:</h2>
 <ul class="tabbed">
-    <?php foreach ($plans as $plan): ?>
-        <li style="bottom:-10px" role="presentation"<?= ($selectedPlan == $plan['id']) ? ' class="active"' : '' ?>">
+    <?php $selectedPlanIndex = 0; $i = 0;
+    foreach ($plans as $plan): ?>
+        <li style="bottom:-10px" role="presentation"<?php
+        if ($selectedPlan == $plan['id']) {
+            echo ' class="active"';
+            $selectedPlanIndex = $i;
+        } ?>">
             <a href="#p<?= $plan['id'] ?>" aria-controls="p<?= $plan['id'] ?>"
                role="tab" data-toggle="tab"><?= $plan['title'] ?></a></li>
-    <?php endforeach; ?>
+    <?php $i++; endforeach; ?>
 </ul>
 
 
     <form method="post">
 
 
-    <?php $first = true; foreach ($plans as $plan): ?>
-    <div class="tab" id="p<?= $plan['id'] ?>"<?php if ($first) { $first = false; } else { ?> style="display:none;"<?php } ?>>
+    <?php $i = 0; foreach ($plans as $plan): ?>
+    <div class="tab" id="p<?= $plan['id'] ?>"<?php if ($selectedPlanIndex != $i) { ?> style="display:none;"<?php } ?>>
         <div class="gui-panel">
         <h3><?= $plan['title'] ?></h3>
             <div class="paidaccess-tariffplan-description">
@@ -79,7 +84,7 @@ use pdima88\phpassets\Assets;
             </tbody>
         </table>
     </div>
-    <?php endforeach; ?>
+    <?php $i++; endforeach; ?>
 
 </div>
 
@@ -97,7 +102,7 @@ use pdima88\phpassets\Assets;
     </div>
 
     <div id="paidaccessUseBonuscode" v-if="selectedTariff">
-        <h2 class="paidaccess-use-bonuscode">Введите бонус-код, чтобы получить скидку:</h2>
+        <h3 class="paidaccess-use-bonuscode">Введите бонус-код, чтобы получить скидку:</h3>
 
         <input type="text" id="txtPaidaccessBonuscode" name="bonus" class="form-control" autocomplete="off"
                style="width: 300px; margin: 0 auto; display: inline-block">
@@ -138,7 +143,7 @@ use pdima88\phpassets\Assets;
 
 
     <div id="paidaccessActivateBonus" style="display: none;">
-        <button type="submit" name="submit" value="bonus" class="btn btn-lg btn-success">Активировать бонус-код</button>
+        <button type="submit" name="submit" value="bonus" class="button">Активировать бонус-код</button>
     </div>
 
 </div>
@@ -149,7 +154,7 @@ use pdima88\phpassets\Assets;
 
 <script>
     $(function(){
-        initTabs('#paidaccessTariffs');
+        initTabs('#paidaccessTariffs', <?= $selectedPlanIndex ?>);
 
         var selectedTariffId = <?= $selectedTariffId ?>;
         var plans = <?= $plans ? json_encode($plans) : '[]' ?>;

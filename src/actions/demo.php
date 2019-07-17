@@ -60,7 +60,7 @@ class demo extends cmsAction {
                     'when_activated' => now(),
                     'when_expiried' => $demoPeriod ? strtotime(now().' +'.$demoPeriod.' days') : null
                 ]);
-                $this->model->updateLevelByUserId(cmsUser::getId());
+                $this->model->refreshByUserId(cmsUser::getId());
                 $success = true;
                 $form = false;
             }

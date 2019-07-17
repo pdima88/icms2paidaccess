@@ -1,8 +1,10 @@
 <?php
 namespace pdima88\icms2paidaccess\tables;
 
+use modelUsers;
 use pdima88\icms2ext\Format;
 use pdima88\icms2ext\Table;
+use pdima88\icms2paidaccess\model as modelPaidaccess;
 use pdima88\icms2pay\tables\row_invoice;
 use pdima88\icms2pay\tables\table_invoices;
 use cmsUser;
@@ -12,7 +14,6 @@ use Zend_Db_Table_Row_Abstract;
 use tableUsers;
 
 /**
- * Class paidaccessOrder
  * @property int $id ID заказа
  * @property int $user_id ID пользователя создавшего заказ
  * @property cmsUser $user Пользователь, создавший заказ
@@ -26,6 +27,7 @@ use tableUsers;
  * @property int $bonuscode_id ID бонус-кода
  * @property int $invoice_id ID счета
  * @property row_invoice $invoice Счет
+ * @property int $questions Количество оставшихся бонусных вопросов
  * @property array $groups Группы, в которые записывается пользователь при активации (фиксируется при активации)
  * @property int $period Срок доступа в днях (фиксируется при активации)
  * @property string $date_created Дата создания заказа
@@ -108,7 +110,7 @@ class row_order extends Zend_Db_Table_Row_Abstract {
 
  *
  * @method static row_order getById($id) Возвращает заказ по ID
- * @method paidaccessOrder createRow(array $data = [], $defaultSource = null)
+ * @method row_order createRow(array $data = [], $defaultSource = null)
  */
 class table_orders extends Table {
     protected $_name = 'paidaccess_orders';
@@ -188,8 +190,8 @@ class table_orders extends Table {
 
     /**
      * Creates new order from current user and specified tariff
-     * @param paidaccessTariff $tariff
-     * @return paidaccessOrder
+     * @param row_tariff $tariff
+     * @return row_order
      */
     function make($tariff, $userId = null) {
         $order = $this->createRow();
@@ -200,16 +202,40 @@ class table_orders extends Table {
         $order->total_amount = $order->amount;
 
         $tariffPlan = $tariff->plan;
-        if ($tariffPlan) $order->groups = cmsModel::arrayToYaml($tariffPlan->groups);
-        $order->period = $tariff->period;
+        if ($tariffPlan) {
+            $order->groups = cmsModel::arrayToYaml($tariffPlan->groups);
+            $order->level = $tariffPlan->level;
+        }
 
+        $order->period = $tariff->period;
         $order->date_created = now();
 
         return $order;
     }
 
+    /**
+     * @param row_order $order
+     */
     function activateOrder($order) {
-        // TODO: activate order
+        if ($order->date_activated) return false;
+        $user = tableUsers::getById($order->user_id);
+        if (!$user) return false;
+        $order->date_activated = now();
+        $order->date_expiry = datetime_iso(strtotime(' +'.$order->period.' days'));
+        $order->is_active = true;
+        $order->save();
+        $model = modelPaidaccess::getInstance();
+        $model->refreshByUserId($user->id);
+
+        if (!empty($order->groups)) {
+            $groups = array_unique(array_merge( $user->groups, $order->groups));
+            $diff = array_diff($groups, $user->groups);
+            if (!empty($diff)) {
+                modelUsers::getInstance()->updateUser($user->id, ['groups' => $groups]);
+            }
+        }
+
+
     }
 
     /**

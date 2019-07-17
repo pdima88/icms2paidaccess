@@ -3,7 +3,6 @@ namespace pdima88\icms2paidaccess\actions;
 
 use cmsCore;
 use cmsForm;
-use pdima88\icms2ext\Format;
 use cmsAction;
 use cmsUser;
 use cmsTemplate;
@@ -48,7 +47,7 @@ class checkout extends cmsAction
         if (!$errors) {
             $user = tableUsers::getById(cmsUser::getId())->toArray();
 
-            if ($user['regstatus'] < 2) {
+            if ($user['regstatus'] < tableUsers::REG_STATUS_JOB) {
                 $form = $this->getForm('userinfo', [$user]);
             } else {
                 $form = new cmsForm();
@@ -75,7 +74,7 @@ class checkout extends cmsAction
         }
 
         if ($this->request->has('submit')) {
-
+            $payTypes = $this->
         }
 
         return $template->render('checkout', array(

@@ -1,31 +1,30 @@
 <?php
 namespace pdima88\icms2paidaccess\actions;
 
-use pdima88\icms2ext\Format;
 use cmsAction;
 use cmsUser;
 use cmsTemplate;
-use cmsRequest;
 use pdima88\icms2paidaccess\frontend;
+use pdima88\icms2paidaccess\model;
+use pdima88\icms2bonuscode\model as modelBonuscode;
 
 /**
- * @property modelPaidaccess $model
+ * @property model $model
  * @property modelPay $model_pay
+ * @property modelBonuscode $model_bonuscode
  * @property pay $controller_pay
  * @property frontend $controller
  * @mixin frontend
  */
 class buy extends cmsAction
 {
-    public function run($plan_id = null){
+    public function run($level = null){
         $this->checkEmailConfirmed();
 
         $template = cmsTemplate::getInstance();
 
         if ($this->request->has('submit')) {
-            if (false !== ($res = $this->submit($this->request->get('submit')))) {
-                return $res;
-            }
+            $this->submit($this->request->get('submit'));
         }
 
         $selectedTariff = false;
@@ -62,10 +61,12 @@ class buy extends cmsAction
             $plansArr[$planId]['tariffs'][] = $a;
         }
 
+        $plan_id = 0;
         $plans=[];
         foreach ($plansArr as $plan) {
             if (isset($plan['tariffs'])) {
                 $plans[$plan['id']] = $plan;
+                if (!$plan_id && $plan['level'] == $level) $plan_id = $plan['id'];
             }
         }
 
@@ -117,12 +118,50 @@ class buy extends cmsAction
             $order->save();
             $this->redirectToAction('checkout', $order->id);
         } elseif ($type == 'bonus') {
-            // TODO: check bonus code, check price,
-            // TODO: if price is 0, add free order by bonuscode
-            // TODO: if price is more than zero, create invoice, order and redirect to invoice pay
+            $code = $this->request->get('bonus', '');
+            $res = $this->checkBonus($code, $tariffId);
+            if (@$res['error']) {
+                return false;
+            }
+            $totalAmount = $order->amount;
+            if ($res['bonus']['type'] == 'discount_percent') {
+                $discount = $res['bonus']['value'].'%';
+                $totalAmount *= min(100, max(0, (100 - $res['bonus']['value']))) / 100;
+            } else if ($res['bonus']['type'] == 'discount_value') {
+                $discount = $res['bonus']['value'];
+                $totalAmount = min($totalAmount,
+                        max(0, $totalAmount - $res['bonus']['value']));
+            } else {
+                return false;
+            }
+            $order->bonuscode_id = $res['bonus']['id'];
+            $order->discount = $discount;
+            $order->total_amount = $totalAmount;
+            $order->pay_type = 'pay';
+            $order->save();
+
+            $this->model_bonuscode->addActivation($order->bonuscode_id, cmsUser::getId(), [
+                'product' => $plan->title. ' ('.$tariff->name.')',
+                'product_id' => $tariffId,
+                'typeid' => $this->name,
+                'order_id' => $order->id,
+            ]);
+
+            if ($order->total_amount == 0) {
+                $order->date_paid = now();
+                $order->pay_type = 'bonus';
+            }
+
+            $order->save();
+
+            $this->redirectToAction('checkout', $order->id);
         }
 
         //$this->redirectTo('pay', 4);
+    }
+
+    public function bonus($tariffId) {
+
     }
 
 

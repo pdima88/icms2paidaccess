@@ -6,9 +6,11 @@ use cmsCore;
 use cmsTemplate;
 use cmsUser;
 use Nette\Utils\Json;
+use pdima88\icms2paidaccess\frontend;
 
 /**
  * @property modelPaidaccess $model
+ * @mixin frontend
  */
 class bonus extends cmsAction
 {
@@ -16,7 +18,6 @@ class bonus extends cmsAction
 
     public function run()
     {
-        $tpl = cmsTemplate::getInstance();
         if (!$this->request->isAjax()) cmsCore::error404();
 
         if (!cmsUser::isLogged()) {
@@ -34,39 +35,7 @@ class bonus extends cmsAction
         $tariffId = $this->request->get('tariff_id', false);
 
         if ($code !== '') {
-
-            /** @var modelBonuscode $modelBonuscode */
-            $modelBonuscode = $this->model_bonuscode;
-
-            $bonusCode = $modelBonuscode->getByCode($code, $this->name);
-            if ($bonusCode) {
-                if ($modelBonuscode->checkActive($bonusCode)) {
-                    $act = $modelBonuscode->getActivation($bonusCode['id'], cmsUser::getInstance()->id);
-                    if (!$act) {
-                        $bonusTariffs = $bonusCode['type']['bonus_tariffs'] ?? [];
-                        if ($tariffId && $this->model->isBonusTariff($bonusTariffs, $tariffId)) {
-                            $res = 'ok';
-                        } else {
-                            $res = 'invalid_tariff';
-                        }
-                        sendJson([
-                            'result' => $res,
-                            'bonus' => [
-                                'value' => $bonusCode['bonus'] ?? 0,
-                                'tariffs' => $bonusTariffs,
-                                'type' => $bonusCode['type']['bonus_type'] ?? ''
-                            ],                            
-                        ]);
-                    } else {
-                        sendJsonError('activated');
-                        // TODO: check can cancel activation
-                    }
-                } else {
-                    sendJsonError('not_found');
-                }
-            } else {
-                sendJsonError('not_found');
-            }
+            sendJson($this->checkBonus($code, $tariffId));
         }
     }
 }
