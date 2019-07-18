@@ -30,6 +30,7 @@
     ],
     'cancel' => [
         'title' => 'Отменить заказ',
+        'href' => $this->href_to('cancel', [$order->id]),
         'show' => true,
     ]
 ]); ?>

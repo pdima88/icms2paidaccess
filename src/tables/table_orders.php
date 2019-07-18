@@ -35,6 +35,7 @@ use tableUsers;
  * @property string $date_activated Дата активации заказа
  * @property string $date_start Начало срока действия (Дата активации или дата окончания последней активированной подписки с этим тарифом)
  * @property string $date_expiry Окончание срока действия
+ * @property string $date_cancelled Дата отмены заказа
  * @property bool $is_active Активен ли заказ (заказ активирован и у него не истек срок действия)
  * @property string $pay_type Тип оплаты (см. {@see tablePaidaccess_Orders::$payTypes})
  * @property int $level Уровень доступа
@@ -171,7 +172,7 @@ class table_orders extends Table {
         /** @var row_order $order */
         $order = $this->fetchRow([
             'tariff_id = ?' => $tariffId,
-            'date_paid IS NULL AND date_activated IS NULL AND user_id = ?' => $userId ?? cmsUser::getInstance()->id,
+            'date_paid IS NULL AND date_activated IS NULL AND date_cancelled IS NULL AND user_id = ?' => $userId ?? cmsUser::getInstance()->id,
         ]);
         if ($order) {
             $invoice = $order->invoice;
@@ -240,6 +241,7 @@ class table_orders extends Table {
 
     /**
      * @param paidaccessOrder $order
+     * @return row_invoice
      */
     function makeInvoice($order) {
         if ($order->date_paid) throw new Exception('Can`t create invoice for paid order');
@@ -271,7 +273,7 @@ class table_orders extends Table {
                 ]);
                 $order->invoice_id = $invoice->save();
             }
-            if ($invoice->status != 0 || $invoice->pay_type != '') {
+            if ($invoice->status != 0) {
                 throw new Exception('Can`t make invoice: already exists');
             }
             $invoice->title = $order->getInvoiceTitle();

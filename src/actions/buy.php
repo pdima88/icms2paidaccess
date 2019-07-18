@@ -160,10 +160,5 @@ class buy extends cmsAction
         //$this->redirectTo('pay', 4);
     }
 
-    public function bonus($tariffId) {
-
-    }
-
-
 
 }

@@ -8,8 +8,10 @@ use cmsUser;
 use cmsTemplate;
 use pdima88\icms2paidaccess\frontend;
 use pdima88\icms2paidaccess\model;
+use pdima88\icms2paidaccess\tables\table_orders;
 use pdima88\icms2pay\fields\field_paytype;
 use pdima88\icms2pay\model as modelPay;
+use pdima88\icms2pay\frontend as pay;
 use tableUsers;
 
 /**
@@ -27,7 +29,7 @@ class checkout extends cmsAction
         $template = cmsTemplate::getInstance();
 
         $order = $this->model->orders->getById($orderId);
-        if (!$order || $order->user_id != cmsUser::getId()) {
+        if (!$order || $order->user_id != cmsUser::getId() || $order->date_cancelled) {
             cmsCore::error404();
         }
         
@@ -57,24 +59,45 @@ class checkout extends cmsAction
                 $form->addField('select_paytype', new field_paytype('pay_type', [
 
                 ]));
-            }            
-
-            if ($this->request->has('submit')) {
-                $user = $form->parse($this->request, true, $user);
-                $errors = $form->validate($this, $user);
-
-                if (!$errors) {
-                    $user['regstatus'] = 2;
-                    $this->model_users->updateUser(cmsUser::getId(), $user);
-                }
-
             }
 
+            if ($this->request->has('submit')) {
+                if ($user['regstatus'] < tableUsers::REG_STATUS_JOB) {
+                    $user = $form->parse($this->request, true, $user);
+                    $errors = $form->validate($this, $user);
 
-        }
 
-        if ($this->request->has('submit')) {
-            $payTypes = $this->
+                    if (!$errors) {
+                        $user['regstatus'] = 2;
+                        $this->model_users->updateUser(cmsUser::getId(), $user);
+                    }
+                }
+
+                if (!$errors) {
+                    $payType = $this->request->get('submit');
+                    $payTypes = $this->controller_pay->getPayTypes();
+                    if ($order->total_amount == 0) {
+                        $order->date_paid = now();
+                        if ($order->bonuscode_id) {
+                            $order->pay_type = table_orders::PAY_TYPE_BONUS;
+                        } else {
+                            $order->pay_type = table_orders::PAY_TYPE_FREE;
+                        }
+                        $order->save();
+                        $this->redirectToAction('activate', [$order->id]);
+                    } else {
+                        if (!isset($payTypes[$payType])) {
+                            $errors[] = 'Тип оплаты не найден';
+                        } else {
+                            $invoice = $order->makeInvoice();
+                            $invoice->pay_type = $payType;
+                            $invoice->save();
+                            $order->save();
+                            $this->redirectTo('pay', $payType, ['payment', $invoice->id]);
+                        }
+                    }
+                }
+            }
         }
 
         return $template->render('checkout', array(
@@ -84,6 +107,7 @@ class checkout extends cmsAction
             'tariff' => $tariff,
             'user' => $user,
             'form' => $form,
+            'errors' => $errors,
         ));
     }
 }

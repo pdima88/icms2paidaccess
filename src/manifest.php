@@ -9,6 +9,8 @@ class manifest
             'bonuscode_component_list',
             'bonuscode_type_form',
             'content_before_item',
+            'user_tab_info',
+            'user_tab_show',
         ];
     }
 
