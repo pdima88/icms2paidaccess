@@ -68,7 +68,7 @@ class checkout extends cmsAction
 
 
                     if (!$errors) {
-                        $user['regstatus'] = 2;
+                        $user['regstatus'] = tableUsers::REG_STATUS_JOB;
                         $this->model_users->updateUser(cmsUser::getId(), $user);
                     }
                 }

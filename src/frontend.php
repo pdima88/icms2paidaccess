@@ -3,9 +3,12 @@ namespace pdima88\icms2paidaccess;
 
 use cmsFrontend;
 use pdima88\icms2paidaccess\model as modelPaidaccess;
+use pdima88\icms2bonuscode\model as modelBonuscode;
 use cmsUser;
 
-/** @property modelPaidaccess $model */
+/**
+ * @property modelPaidaccess $model
+ */
 class frontend extends cmsFrontend {
    
     function checkEmailConfirmed($msg = null)

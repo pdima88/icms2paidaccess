@@ -12,7 +12,7 @@ use pdima88\icms2paidaccess\frontend as paidaccess;
  */
 class user_tab_show extends cmsAction {
 
-    public function run($profile, $tab_name){
+    public function run($profile, $tab_name) {
         if ($tab_name == 'paidaccess') {
             
             $level = cmsUser::get('paidaccess_level');
@@ -22,11 +22,17 @@ class user_tab_show extends cmsAction {
                 $plan = $this->model->plans->getByLevel($level);
             }
 
+            $activateOrders = $this->model->orders->fetchRows([
+                'date_paid IS NOT NULL AND date_cancelled IS NULL 
+                    AND date_activated IS NULL AND user_id = ?' => cmsUser::getId()
+            ]);
+
             return $this->cms_template->renderInternal($this, 'profile_tab', [
                 'profile' => $profile,
                 'plan' => $plan,
                 'expiry' => $expiry,
-                'level' => $level
+                'level' => $level,
+                'activateOrders' => $activateOrders
             ]);
 
         }        
