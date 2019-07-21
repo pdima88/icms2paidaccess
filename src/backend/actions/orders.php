@@ -1,7 +1,6 @@
 <?php
 namespace pdima88\icms2paidaccess\backend\actions;
 
-use Nette\Utils\Html;
 use pdima88\icms2ext\crudAction;
 use pdima88\icms2paidaccess\tables\table_orders;
 use pdima88\icms2ext\GridHelper;
@@ -107,6 +106,17 @@ class orders extends crudAction {
                     'sort' => true,
                     'filter' => 'equal'
                 ],
+                'date_paid' => [
+                    'title' => 'Дата оплаты',
+                    'format' => 'datetime',
+                    'sort' => true,
+                    'filter' => 'dateRange'
+                ],
+                'pay_type' => [
+                    'title' => 'Тип оплаты',
+                    'format' => table_orders::$payTypes,
+                    'filter' => 'select',
+                ]
             ]
         ];
         return $grid;
