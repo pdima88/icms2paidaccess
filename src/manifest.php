@@ -11,6 +11,7 @@ class manifest
             'content_before_item',
             'user_tab_info',
             'user_tab_show',
+            'pay_invoice_set_paid',
         ];
     }
 

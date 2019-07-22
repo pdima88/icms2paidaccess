@@ -211,6 +211,7 @@ class table_orders extends Table {
             $order->groups = cmsModel::arrayToYaml($tariffPlan->groups);
             $order->level = $tariffPlan->level;
         }
+        $order->questions = $tariff->questions;
 
         $order->period = $tariff->period;
         $order->date_created = now();
@@ -291,7 +292,6 @@ class table_orders extends Table {
             $invoice->amount = $order->total_amount;
             $invoice->data = [
                 'items' => $items,
-                'order_id' => $order->id
             ];
         }
         return $invoice;

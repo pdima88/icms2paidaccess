@@ -13,7 +13,7 @@ use Zend_Db_Table_Row_Abstract;
  * @property string $name Автоматически формируемое название (из срока действия тарифа, например, 1 месяц, 3 дня и т.д.)
  * @property int $period Срок действия тарифа (дней)
  * @property float $price Цена
- * @property int $bonus Количество вопросов
+ * @property int $questions Количество вопросов
  * @property bool $is_active Активен ли тариф
  */
 class row_tariff extends Zend_Db_Table_Row_Abstract {

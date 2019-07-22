@@ -77,7 +77,7 @@ use pdima88\phpassets\Assets;
                            name="tariff_id" value="<?= $tariff['id'] ?>"></td>
                 <td style="white-space: nowrap"><label for="tariff<?= $tariff['id'] ?>"><?= $tariff['name'] ?></label></td>
                 <td style="text-align: center"><?= $tariff['period'] ?></td>
-                <td style="text-align: center"><?= $tariff['bonus'] ?></td>
+                <td style="text-align: center"><?= $tariff['questions'] ?></td>
                 <td style="text-align: right; white-space: nowrap;"><?= number_format($tariff['price'], 0, ',', ' ') ?></td>
             </tr>
         <?php endforeach; ?>

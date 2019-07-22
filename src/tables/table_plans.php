@@ -51,6 +51,6 @@ class table_plans extends Table {
      * @return row_plan
      */
     function getByLevel($level) {
-        return $this->fetchRow(['level = ?' => $level]);
+        return $this->fetchRow(['level = ?' => $level], 'is_active DESC');
     }
 }

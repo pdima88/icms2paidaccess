@@ -42,7 +42,7 @@ class form_tariff extends cmsForm {
 						)
 					)),
 
-					new fieldNumber('bonus', array(
+					new fieldNumber('question', array(
 						'title' => 'Количество бонусных вопросов',
 						'default' => 0,
 					)),
