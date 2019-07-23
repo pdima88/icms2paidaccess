@@ -80,8 +80,8 @@ class activate extends cmsAction
 
         return $template->render('activate', array(
             'order' => $order,
-            'tariff' => $order->tariff,
-            'plan' => $order->plan,
+            'tariff' => $order ? $order->tariff : null,
+            'plan' => $order ? $order->plan : null,
             'user' => $user,
             'form' => $form,
             'errors' => $errors,

@@ -2,10 +2,9 @@
 namespace pdima88\icms2paidaccess\hooks;
 
 use cmsAction;
-use cmsUser;
 use pdima88\icms2paidaccess\frontend as paidaccess;
 use pdima88\icms2paidaccess\tables\row_order;
-use pdima88\icms2pay\tables\row_invoice;
+
 
 /**
  * @mixin paidaccess
@@ -31,7 +30,8 @@ class pay_invoice_set_paid extends cmsAction
                 $order->save();
 
                 // личное сообщение
-                $this->controller_messages->addRecipient($order->user_id)->sendNoticePM(array(
+                $r = $this->controller_messages->addRecipient($order->user_id);
+                $r->sendNoticePM(array(
                     'content' => 'Заказ №'.$order->id.' оплачен. Активируйте заказ на вкладке Платный доступ на странице Мой профиль',
                     'actions' => array(
                         'activate' => array(
@@ -40,6 +40,10 @@ class pay_invoice_set_paid extends cmsAction
                         )
                     )
                 ));
+                $r->sendNoticeEmail('paidaccess_paid', [
+                    'order_id' => $order->id,
+                    'activate_url' => href_to_abs($this->name, 'activate', [$order->id])
+                ]);
                 return true;
             }
         }
